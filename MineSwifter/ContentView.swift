@@ -10,12 +10,12 @@ struct ContentView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Spacer() // TODO: Game baord.
+            BoardView(vm: BoardViewModel())
         }
         .safeAreaInset(edge: .top, spacing: 0) {
             HStack {
                 Label("\(minesLeft)", systemImage: "flag.fill")
-                    .labelStyle(.titleAndIcon)
+                    .labelStyle(.titleAndIcon)		
                     .font(.title3.monospacedDigit())
 
                 Spacer(minLength: 32)
