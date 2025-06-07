@@ -5,7 +5,7 @@ struct CellView : View {
     let viewModel: CellViewModel
     
     var body: some View {
-        Button(action: {}) {
+        Group {
             switch viewModel.state() {
             case .flagged:
                 Text("🚩")

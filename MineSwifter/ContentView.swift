@@ -2,7 +2,7 @@ import SwiftUI
 
 enum Tool: Hashable { case reveal, flag, move }
 
-struct ContentView: View {
+struct ContentView: View, TapModeDelegate {
     @State var minesLeft: String = "10"
     @State var seconds: String = "00:00"
     @State var onReset: () -> Void = {}
@@ -10,7 +10,7 @@ struct ContentView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            BoardView(vm: BoardViewModel())
+            BoardView(vm: BoardViewModel(), tapModeDelegate: self)
         }
         .safeAreaInset(edge: .top, spacing: 0) {
             HStack {

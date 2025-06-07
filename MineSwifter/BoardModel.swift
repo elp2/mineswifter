@@ -58,4 +58,16 @@ class BoardModel {
             }
         }
     }
+
+    func flagCell(row: Int, col: Int) {
+        board[row][col].isFlagged = !board[row][col].isFlagged
+    }
+
+    func revealCell(row: Int, col: Int) {
+        if board[row][col].isFlagged {
+            return
+        }
+        // TODO: Implement.
+    }
+    
 }
