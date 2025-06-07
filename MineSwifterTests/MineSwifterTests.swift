@@ -1,10 +1,3 @@
-//
-//  MineSwifterTests.swift
-//  MineSwifterTests
-//
-//  Created by Edward Palmer on 6/7/25.
-//
-
 import Testing
 @testable import MineSwifter
 

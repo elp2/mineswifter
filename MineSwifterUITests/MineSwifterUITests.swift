@@ -1,10 +1,3 @@
-//
-//  MineSwifterUITests.swift
-//  MineSwifterUITests
-//
-//  Created by Edward Palmer on 6/7/25.
-//
-
 import XCTest
 
 final class MineSwifterUITests: XCTestCase {
