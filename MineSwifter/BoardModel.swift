@@ -98,7 +98,6 @@ class BoardModel {
                 continue
             }
             
-            print("revealed: ", r, c)
             board[r][c].isRevealed = true
             cellsRevealed += 1
             totalRevealed += 1

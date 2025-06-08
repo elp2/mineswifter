@@ -11,8 +11,6 @@ struct BoardView : View {
     
     func onCellTapped(_ row: Int, _ col: Int) {
         if delegate.tool == .move {
-            // Drag interpreted as a tap, ignore.
-            print("Drag interpreted as a tap, ignoring at", row, col)
             return
         } else if delegate.tool == .flag {
             vm.flagCell(row: row, col: col)
