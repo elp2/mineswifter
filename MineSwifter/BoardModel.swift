@@ -1,6 +1,14 @@
+enum RevealResult : Equatable {
+    case won
+    case lost
+    case flagged
+    case revealed(cellsRevealed: Int)
+}
+
 class BoardModel {
     var board: [[CellModel]] = []
     var mines: Int = 0
+    var totalRevealed: Int = 0
     var rows: Int = 0
     var cols: Int = 0
     var minePositionsTest: [Int] = []
@@ -29,7 +37,7 @@ class BoardModel {
                 cell.adjacentMines = 0
             }
         }
-
+        totalRevealed = 0
         for minePosition in minePositions() {
             let row = minePosition / cols
             let col = minePosition % cols
@@ -63,11 +71,54 @@ class BoardModel {
         board[row][col].isFlagged = !board[row][col].isFlagged
     }
 
-    func revealCell(row: Int, col: Int) {
+    func revealCell(row: Int, col: Int) -> RevealResult {
         if board[row][col].isFlagged {
-            return
+            return .flagged
+        } else if board[row][col].isRevealed {
+            return .revealed(cellsRevealed: 0)
         }
-        // TODO: Implement.
+        
+        if board[row][col].isMine {
+            for i in 0..<rows {
+                for j in 0..<cols {
+                    board[i][j].isRevealed = true
+                }
+            }
+            return .lost
+        }
+        
+        var cellsRevealed = 0
+        var queue = [(row, col)] as [(Int, Int)]
+        while !queue.isEmpty {
+            let (r, c) = queue.removeFirst()
+            assert(!board[r][c].isMine)
+            
+            // Skip if already revealed
+            if board[r][c].isRevealed {
+                continue
+            }
+            
+            print("revealed: ", r, c)
+            board[r][c].isRevealed = true
+            cellsRevealed += 1
+            totalRevealed += 1
+            if totalRevealed == rows * cols - mines {
+                return .won
+            }
+            // If it's empty (no adjacent mines), add adjacent cells to queue
+            if board[r][c].adjacentMines == 0 {
+                for i in (-1 + r)...(1 + r) {
+                    for j in (-1 + c)...(1 + c) {
+                        if i == r && j == c || i < 0 || i >= rows || j < 0 || j >= cols {
+                            continue
+                        }
+                        queue.append((i, j))
+                    }
+                }
+            }
+        }
+        
+        return .revealed(cellsRevealed: cellsRevealed)
     }
     
 }
