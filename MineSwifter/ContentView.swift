@@ -2,29 +2,47 @@ import SwiftUI
 
 enum Tool: Hashable { case reveal, flag, move }
 
-struct ContentView: View, TapModeDelegate {
-    @State var minesLeft: String = "10"
-    @State var seconds: String = "00:00"
-    @State var onReset: () -> Void = {}
+class GameTimer: ObservableObject {
+    @Published var seconds: Int = 0
+    private var timer: Timer?
+    
+    func start() {
+        timer?.invalidate()
+        seconds = 0
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            self?.seconds += 1
+        }
+    }
+    
+    func stop() {
+        timer?.invalidate()
+        timer = nil
+    }
+}
+
+struct ContentView: View, BoardDelegate {
     @State var tool: Tool = .reveal
+    @StateObject private var boardVM = BoardViewModel()
+    @StateObject private var gameTimer = GameTimer()
+    @State var minesLeft: String = ""
 
     var body: some View {
         VStack(spacing: 16) {
-            BoardView(vm: BoardViewModel(), tapModeDelegate: self)
+            BoardView(vm: boardVM, delegate: self)
         }
         .safeAreaInset(edge: .top, spacing: 0) {
             HStack {
-                Label("\(minesLeft)", systemImage: "flag.fill")
-                    .labelStyle(.titleAndIcon)		
+                Label("\(boardVM.mineCount)", systemImage: "flag.fill")
+                    .labelStyle(.titleAndIcon)
                     .font(.title3.monospacedDigit())
 
                 Spacer(minLength: 32)
 
-                Button(action: onReset) { Text("💥").font(.title) }
+                Button(action: { newGame() }) { Text("💥").font(.title) }
 
                 Spacer(minLength: 32)
 
-                Label("\(seconds)", systemImage: "timer")
+                Label(String(format: "%02d:%02d", gameTimer.seconds / 60, gameTimer.seconds % 60), systemImage: "timer")
                     .labelStyle(.titleAndIcon)
                     .font(.title3.monospacedDigit())
             }
@@ -45,6 +63,19 @@ struct ContentView: View, TapModeDelegate {
             .padding([.horizontal, .top])
             .background(.thinMaterial)
         }
+        .onAppear {
+            newGame()
+        }
+    }
+    
+    func updateMines(_ count: Int) {
+        minesLeft = "\(boardVM.mineCount)"
+    }
+    
+    private func newGame() {
+        boardVM.newGame()
+        gameTimer.start()
+        minesLeft = "\(boardVM.mineCount)"
     }
 }
 

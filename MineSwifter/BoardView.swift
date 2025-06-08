@@ -1,21 +1,23 @@
 import SwiftUI
 
-protocol TapModeDelegate {
+protocol BoardDelegate {
     var tool: Tool { get }
+    func updateMines(_ count: Int)
 }
 
 struct BoardView : View {
     @ObservedObject var vm: BoardViewModel
-    let tapModeDelegate: TapModeDelegate
+    let delegate: BoardDelegate
     
     func onCellTapped(_ row: Int, _ col: Int) {
-        if tapModeDelegate.tool == .move {
+        if delegate.tool == .move {
             // Drag interpreted as a tap, ignore.
             print("Drag interpreted as a tap, ignoring at", row, col)
             return
-        } else if tapModeDelegate.tool == .flag {
+        } else if delegate.tool == .flag {
             vm.flagCell(row: row, col: col)
-        } else if tapModeDelegate.tool == .reveal {
+            delegate.updateMines(vm.mineCount)
+        } else if delegate.tool == .reveal {
             vm.revealCell(row: row, col: col)
         }
     }
