@@ -5,6 +5,12 @@ enum RevealResult : Equatable {
     case revealed(cellsRevealed: Int)
 }
 
+enum BoardState : Equatable {
+    case ongoing
+    case won
+    case lost
+}
+
 class BoardModel {
     var board: [[CellModel]] = []
     var mines: Int = 0
@@ -12,6 +18,7 @@ class BoardModel {
     var rows: Int = 0
     var cols: Int = 0
     var minePositionsTest: [Int] = []
+    var boardState: BoardState = .ongoing
 
     init(rows: Int, cols: Int, mines: Int, minePositionsTest: [Int]? = nil) {
         self.rows = rows
@@ -37,6 +44,7 @@ class BoardModel {
                 cell.adjacentMines = 0
             }
         }
+        boardState = .ongoing
         totalRevealed = 0
         for minePosition in minePositions() {
             let row = minePosition / cols
@@ -84,6 +92,7 @@ class BoardModel {
                     board[i][j].isRevealed = true
                 }
             }
+            boardState = .lost
             return .lost
         }
         
@@ -102,6 +111,7 @@ class BoardModel {
             cellsRevealed += 1
             totalRevealed += 1
             if totalRevealed == rows * cols - mines {
+                boardState = .won
                 return .won
             }
             // If it's empty (no adjacent mines), add adjacent cells to queue
@@ -119,5 +129,4 @@ class BoardModel {
         
         return .revealed(cellsRevealed: cellsRevealed)
     }
-    
 }

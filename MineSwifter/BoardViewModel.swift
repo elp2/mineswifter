@@ -33,7 +33,7 @@ import Foundation
     
     private func refreshBoard() {
         board = model.board.map { row in
-            row.map { CellViewModel(model: $0) }
+            row.map { CellViewModel(model: $0, boardState: model.boardState) }
         }
     }
 }
