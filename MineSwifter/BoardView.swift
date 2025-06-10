@@ -3,6 +3,8 @@ import SwiftUI
 protocol BoardDelegate {
     var tool: Tool { get }
     func updateMines(_ count: Int)
+    func wonGame()
+    func lostGame()
 }
 
 struct BoardView : View {

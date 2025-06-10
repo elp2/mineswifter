@@ -1,8 +1,15 @@
 import Foundation
 
+enum GameState {
+    case playing
+    case won
+    case lost
+}
+
 @MainActor final class BoardViewModel: ObservableObject {
     @Published private(set) var board: [[CellViewModel]] = []
     @Published private(set) var mineCount: Int = 0
+    @Published private(set) var gameState: GameState = .playing
     private let model: BoardModel
     
     init(rows: Int = 5, cols: Int = 5, mines: Int = 5, minePositionsTest: [Int]? = nil) {
@@ -15,9 +22,11 @@ import Foundation
         model.reset()
         self.refreshBoard()
         self.mineCount = model.mines
+        self.gameState = .playing
     }
     
     func flagCell(row: Int, col: Int) {
+        guard gameState == .playing else { return }
         model.flagCell(row: row, col: col)
         self.refreshBoard()
         let flagCount = model.board.flatMap { $0 }.filter { $0.isFlagged }.count
@@ -26,8 +35,17 @@ import Foundation
     }
 
     func revealCell(row: Int, col: Int) {
-        model.revealCell(row: row, col: col)
+        guard gameState == .playing else { return }
+        let result = model.revealCell(row: row, col: col)
         self.refreshBoard()
+        switch result {
+        case .won:
+            gameState = .won
+        case .lost:
+            gameState = .lost
+        default:
+            break
+        }
         objectWillChange.send()
     }
     

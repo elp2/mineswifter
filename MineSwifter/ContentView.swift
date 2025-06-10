@@ -24,7 +24,6 @@ struct ContentView: View, BoardDelegate {
     @State var tool: Tool = .reveal
     @StateObject private var boardVM = BoardViewModel()
     @StateObject private var gameTimer = GameTimer()
-    @State var minesLeft: String = ""
 
     var body: some View {
         VStack(spacing: 16) {
@@ -66,16 +65,36 @@ struct ContentView: View, BoardDelegate {
         .onAppear {
             newGame()
         }
+        .alert("You Won!", isPresented: .constant(boardVM.gameState == .won)) {
+            Button("New Game") {
+                newGame()
+            }
+        } message: {
+            Text("Congratulations! You found all the mines!")
+        }
+        .alert("You Lost!", isPresented: .constant(boardVM.gameState == .lost)) {
+            Button("New Game") {
+                newGame()
+            }
+        } message: {
+            Text("You blew up! Maybe next time!")
+        }
     }
     
     func updateMines(_ count: Int) {
-        minesLeft = "\(boardVM.mineCount)"
     }
     
     private func newGame() {
         boardVM.newGame()
         gameTimer.start()
-        minesLeft = "\(boardVM.mineCount)"
+    }
+    
+    func wonGame() {
+        gameTimer.stop()
+    }
+    
+    func lostGame() {
+        gameTimer.stop()
     }
 }
 

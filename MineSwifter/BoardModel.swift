@@ -87,11 +87,7 @@ class BoardModel {
         }
         
         if board[row][col].isMine {
-            for i in 0..<rows {
-                for j in 0..<cols {
-                    board[i][j].isRevealed = true
-                }
-            }
+            revealAllItems()
             boardState = .lost
             return .lost
         }
@@ -110,8 +106,9 @@ class BoardModel {
             board[r][c].isRevealed = true
             cellsRevealed += 1
             totalRevealed += 1
-            if totalRevealed == rows * cols - mines {
+            if totalRevealed == (rows * cols - mines) {
                 boardState = .won
+                revealAllItems()
                 return .won
             }
             // If it's empty (no adjacent mines), add adjacent cells to queue
@@ -128,5 +125,13 @@ class BoardModel {
         }
         
         return .revealed(cellsRevealed: cellsRevealed)
+    }
+    
+    func revealAllItems() {
+        for i in 0..<rows {
+            for j in 0..<cols {
+                board[i][j].isRevealed = true
+            }
+        }
     }
 }
