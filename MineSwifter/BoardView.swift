@@ -11,7 +11,7 @@ struct BoardView : View {
     @ObservedObject var vm: BoardViewModel
     let delegate: BoardDelegate
     
-    func onCellTapped(_ row: Int, _ col: Int) {
+    func onCellTapped(row: Int, col: Int) {
         if delegate.tool == .move {
             return
         } else if delegate.tool == .flag {
@@ -19,6 +19,12 @@ struct BoardView : View {
             delegate.updateMines(vm.mineCount)
         } else if delegate.tool == .reveal {
             vm.revealCell(row: row, col: col)
+        }
+    }
+    
+    func onCellDoubleTapped(row: Int, col: Int) {
+        if delegate.tool == .reveal {
+            vm.revealAdjacent(row: row, col: col)
         }
     }
     
@@ -30,7 +36,10 @@ struct BoardView : View {
                         CellView(viewModel: vm.board[row][col])
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                onCellTapped(row, col)
+                                onCellTapped(row: row, col: col)
+                            }
+                            .onTapGesture(count: 2) {
+                                onCellDoubleTapped(row: row, col: col)
                             }
                     }
                 }

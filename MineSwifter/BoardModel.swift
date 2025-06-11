@@ -115,7 +115,7 @@ class BoardModel {
             if board[r][c].adjacentMines == 0 {
                 for i in (-1 + r)...(1 + r) {
                     for j in (-1 + c)...(1 + c) {
-                        if i == r && j == c || i < 0 || i >= rows || j < 0 || j >= cols {
+                        if (i == r && j == c) || i < 0 || i >= rows || j < 0 || j >= cols {
                             continue
                         }
                         queue.append((i, j))
@@ -125,6 +125,47 @@ class BoardModel {
         }
         
         return .revealed(cellsRevealed: cellsRevealed)
+    }
+    
+    func revealAdjacent(row: Int, col: Int) -> RevealResult {
+        if !board[row][col].isRevealed {
+            return .revealed(cellsRevealed: 0)
+        }
+        if board[row][col].adjacentMines == 0 {
+            return .revealed(cellsRevealed: 0)
+        }
+        var adjacentEmpty : [(Int, Int)] = []
+        var adjacentFlags = 0
+        for i in (-1 + row)...(1 + row) {
+            for j in (-1 + col)...(1 + col) {
+                if (i == row && j == col) || i < 0 || i >= rows || j < 0 || j >= cols {
+                    continue
+                }
+                if board[i][j].isFlagged {
+                    adjacentFlags += 1
+                } else {
+                    adjacentEmpty.append((i, j))
+                }
+            }
+        }
+        if adjacentFlags != board[row][col].adjacentMines {
+            return .revealed(cellsRevealed: 0)
+        }
+        var revealedCells = 0
+        for (nr, nc) in adjacentEmpty {
+            let rr = revealCell(row: nr, col: nc)
+            switch rr {
+            case .won:
+                return .won
+            case .lost:
+                return .lost
+            case .flagged:
+                preconditionFailure("Flagged cells found when revealing adjacent cells.")
+            case .revealed(cellsRevealed: let c):
+                revealedCells += c
+            }
+        }
+        return .revealed(cellsRevealed: revealedCells)
     }
     
     func revealAllItems() {

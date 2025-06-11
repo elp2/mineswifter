@@ -37,7 +37,24 @@ enum GameState {
     func revealCell(row: Int, col: Int) {
         guard gameState == .playing else { return }
         let result = model.revealCell(row: row, col: col)
-        self.refreshBoard()
+        refreshBoard()
+        
+        switch result {
+        case .won:
+            gameState = .won
+        case .lost:
+            gameState = .lost
+        default:
+            break
+        }
+        objectWillChange.send()
+    }
+    
+    func revealAdjacent(row: Int, col: Int) {
+        guard gameState == .playing else { return }
+        let result = model.revealAdjacent(row: row, col: col)
+        refreshBoard()
+        
         switch result {
         case .won:
             gameState = .won
